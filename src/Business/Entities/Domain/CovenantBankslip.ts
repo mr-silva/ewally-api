@@ -54,8 +54,6 @@ export class CovenantBankslip implements ISpecificBankslip {
     const expirationMonth = Number(expirationDateData.slice(4, 6))
     const expirationDay = Number(expirationDateData.slice(6, 8))
 
-    console.log(expirationYear, expirationMonth, expirationDay)
-
     if (expirationYear > this.maxExpirationYear) return null
 
     if (expirationMonth === 0) return null
