@@ -1,5 +1,9 @@
 export class Bankslip {
-  constructor(private barCode: string, private amount: number, private expirationDate: Date) {}
+  constructor(
+    private barCode: string,
+    private amount: number,
+    private expirationDate: Date | null
+  ) {}
 
   public getBarCode(): string {
     return this.barCode
@@ -9,7 +13,7 @@ export class Bankslip {
     return this.amount
   }
 
-  public getExpirationDate(): Date {
+  public getExpirationDate(): Date | null {
     return this.expirationDate
   }
 }
