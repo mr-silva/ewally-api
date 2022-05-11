@@ -1,7 +1,4 @@
-import * as dotenv from 'dotenv'
 import { app } from './app'
-
-dotenv.config()
 
 app.set('port', 8080)
 

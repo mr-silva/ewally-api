@@ -1,7 +1,10 @@
 import * as cors from 'cors'
 import * as express from 'express'
+import * as dotenv from 'dotenv'
 import { ErrorHandler } from './Infra/Middlewares/ErrorHandlerMiddleware'
 import { routes } from './Infra/Routes'
+
+dotenv.config()
 
 const app = express()
 const errorHandler = new ErrorHandler()

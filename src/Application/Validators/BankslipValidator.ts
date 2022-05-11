@@ -9,6 +9,7 @@ import { BondsBankslipInvalidGeneralDVError } from '../../Business/Entities/Doma
 import { CovenantBankslipInvalidEffectiveValueError } from '../../Business/Entities/Domain/Errors/CovenantBankslipInvalidEffectiveValueError'
 import { CovenantBankslipSegmentEnum } from '../../Business/Enums/CovenantBankslipSegmentEnum'
 import { CovenantBankslipInvalidSegmentError } from '../../Business/Entities/Domain/Errors/CovenantBankslipInvalidSegmentError'
+import { CovenantBankslipInvalidGeneralDVError } from '../../Business/Entities/Domain/Errors/CovenantBankslipInvalidGeneralDVError'
 
 export class BankslipValidator {
   public validateBankslipDigitableLine(digitableLine: string): void {
@@ -58,6 +59,20 @@ export class BankslipValidator {
         break
 
       case BankslipTypeEnum.COVENANT:
+        const effectiveValue = this.getEffectiveValue(barCode)
+
+        switch (effectiveValue) {
+          case CovenantBankslipEffectiveValueModuleCalculationEnum.BRL_TRUE_VALUE_MODULE_10:
+          case CovenantBankslipEffectiveValueModuleCalculationEnum.COIN_QUANTITY_MODULE_10:
+            this.validateCovenantBankslipBarCodeGeneralVerificationDigitModule10(barCode)
+            break
+
+          case CovenantBankslipEffectiveValueModuleCalculationEnum.BRL_TRUE_VALUE_MODULE_11:
+          case CovenantBankslipEffectiveValueModuleCalculationEnum.COIN_QUANTITY_MODULE_11:
+            this.validateCovenantBankslipBarCodeGeneralVerificationDigitModule11(barCode)
+            break
+        }
+        break
         break
     }
   }
@@ -70,6 +85,26 @@ export class BankslipValidator {
 
     if (dac !== new BankslipDigitChecker().module11(barCodeToCalculate, BankslipTypeEnum.BONDS))
       throw new BondsBankslipInvalidGeneralDVError()
+  }
+
+  private validateCovenantBankslipBarCodeGeneralVerificationDigitModule10(barCode: string): void {
+    const splittedBarCode = barCode.split('')
+    const dac = Number(splittedBarCode.splice(3, 1))
+
+    const barCodeToCalculate = splittedBarCode.join('')
+
+    if (dac !== new BankslipDigitChecker().module10(barCodeToCalculate))
+      throw new CovenantBankslipInvalidGeneralDVError()
+  }
+
+  private validateCovenantBankslipBarCodeGeneralVerificationDigitModule11(barCode: string): void {
+    const splittedBarCode = barCode.split('')
+    const dac = Number(splittedBarCode.splice(3, 1))
+
+    const barCodeToCalculate = splittedBarCode.join('')
+
+    if (dac !== new BankslipDigitChecker().module11(barCodeToCalculate, BankslipTypeEnum.COVENANT))
+      throw new CovenantBankslipInvalidGeneralDVError()
   }
 
   private validateCovenentGroupCheckerDigitByModule10(digitableLine: string): void {
@@ -132,7 +167,10 @@ export class BankslipValidator {
     digitGroups.forEach((digitGroup, i) => {
       const dac = Number(digitGroup.slice(-1))
 
-      if (dac !== new BankslipDigitChecker().module11(digitGroup, BankslipTypeEnum.COVENANT))
+      if (
+        dac !==
+        new BankslipDigitChecker().module11(digitGroup.slice(0, 11), BankslipTypeEnum.COVENANT)
+      )
         throw new CovenantBankslipInvalidGroupDVError(i + 1)
     })
   }
