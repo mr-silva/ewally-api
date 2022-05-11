@@ -16,6 +16,7 @@ import {
   invalidCovenantDigitCheckerGroup4Module11,
   invalidCovenantEffectiveValue,
   invalidCovenantGeneralDigitCheckerModule10,
+  invalidCovenantGeneralDigitCheckerModule11,
   invalidCovenantSegment,
   invalidDigitableLineCharacter,
   invalidDigitableLineCharacterWithSpace,
@@ -187,6 +188,17 @@ describe('GET /boleto', () => {
     expect(response.body).toEqual({
       code: '422.covenantBankslipInvalidGroupDVError',
       message: 'Invalid covenant bankslip DV in group 4.',
+      details: []
+    })
+  })
+
+  it('should NOT be able to generate info from a covenant bankslip digitable line with invalid general digit checker THAT uses module 11 calculation method', async () => {
+    const response = await request(app).get(`/boleto/${invalidCovenantGeneralDigitCheckerModule11}`)
+
+    expect(response.status).toEqual(422)
+    expect(response.body).toEqual({
+      code: '422.covenantBankslipInvalidGeneralDVError',
+      message: 'Invalid covenant bankslip general DV.',
       details: []
     })
   })
