@@ -5,49 +5,56 @@ import { BondsBankslip } from '../../Business/Entities/Domain/BondsBankslip'
 import { CovenantBankslipSegmentEnum } from '../../Business/Enums/CovenantBankslipSegmentEnum'
 import { CovenantBankslip } from '../../Business/Entities/Domain/CovenantBankslip'
 
-export class BankslipGenerateInfoByBarCodeUseCase {
+export class BankslipGenerateInfoByDigitableLineUseCase {
   constructor(private readonly bankslipValidator: BankslipValidator) {}
 
-  public execute(barCode: string): Bankslip {
-    this.bankslipValidator.validateBankslipBarCode(barCode)
+  public execute(digitableLine: string): Bankslip {
+    this.bankslipValidator.validateBankslipDigitableLine(digitableLine)
 
     const bankslipType =
-      barCode.split('').length === 47 ? BankslipTypeEnum.BONDS : BankslipTypeEnum.COVENANT
+      digitableLine.split('').length === 47 ? BankslipTypeEnum.BONDS : BankslipTypeEnum.COVENANT
 
-    const cleanBarCode = this.clearBarCode(barCode, bankslipType)
+    this.bankslipValidator.validateBankslipDigitableLineByType(digitableLine, bankslipType)
+
+    const barCode = this.generateBarCodeByBankslipType(digitableLine, bankslipType)
+
+    this.bankslipValidator.validateBankslipBarCodeLineByType(barCode, bankslipType)
 
     switch (bankslipType) {
       case BankslipTypeEnum.BONDS:
-        return this.generateInfoFromBondsBankslip(cleanBarCode)
+        return this.generateInfoFromBondsBankslip(barCode)
 
       case BankslipTypeEnum.COVENANT:
-        return this.generateInfoFromConvenantBankslip(cleanBarCode)
+        return this.generateInfoFromConvenantBankslip(barCode)
     }
   }
 
   /**
-   * Converte uma linha digitável de acordo com o tipo em código de barras com 44 carácteres.
+   * Gera um código de barras a partir de uma linha digitável.
    *
-   * @param {string} barCode
+   * @param {string} digitableLine
    */
-  private clearBarCode(barCode: string, bankslipType: BankslipTypeEnum): string {
+  private generateBarCodeByBankslipType(
+    digitableLine: string,
+    bankslipType: BankslipTypeEnum
+  ): string {
     switch (bankslipType) {
       case BankslipTypeEnum.BONDS:
         return String().concat(
-          barCode.slice(0, 4),
-          barCode.slice(32, 33),
-          barCode.slice(33, 47),
-          barCode.slice(4, 9),
-          barCode.slice(10, 20),
-          barCode.slice(21, 31)
+          digitableLine.slice(0, 4),
+          digitableLine.slice(32, 33),
+          digitableLine.slice(33, 47),
+          digitableLine.slice(4, 9),
+          digitableLine.slice(10, 20),
+          digitableLine.slice(21, 31)
         )
 
       case BankslipTypeEnum.COVENANT:
         return String().concat(
-          barCode.slice(0, 11),
-          barCode.slice(12, 23),
-          barCode.slice(24, 35),
-          barCode.slice(36, 47)
+          digitableLine.slice(0, 11),
+          digitableLine.slice(12, 23),
+          digitableLine.slice(24, 35),
+          digitableLine.slice(36, 47)
         )
     }
   }
@@ -82,7 +89,7 @@ export class BankslipGenerateInfoByBarCodeUseCase {
    * @returns {Bankslip}
    */
   private generateInfoFromConvenantBankslip(barCode: string): Bankslip {
-    const segmentId = CovenantBankslipSegmentEnum[barCode.slice(1, 2)]
+    const segmentId = Number(barCode.slice(1, 2))
 
     let companyId: string = barCode.slice(15, 23)
     let freeField: string = barCode.slice(23, 44)

@@ -1,13 +1,12 @@
 import { Bankslip } from '../../Business/Entities/Domain/Bankslip'
-import { BankslipGenerateInfoByBarCodeUseCase } from '../../Application/UseCases/BankslipGenerateInfoByBarCodeUseCase'
+import { BankslipGenerateInfoByDigitableLineUseCase } from '../../Application/UseCases/BankslipGenerateInfoByDigitableLineUseCase'
 import { BankslipValidator } from '../../Application/Validators/BankslipValidator'
 
 export class BankslipFacade {
-  public async generateInfoByBarCode(barCode: string): Promise<Bankslip> {
-    const bankslipGenerateInfoByBarCodeUseCase = new BankslipGenerateInfoByBarCodeUseCase(
-      new BankslipValidator()
-    )
+  public async generateInfoByDigitableLine(digitableLine: string): Promise<Bankslip> {
+    const bankslipGenerateInfoByDigitableLineUseCase =
+      new BankslipGenerateInfoByDigitableLineUseCase(new BankslipValidator())
 
-    return bankslipGenerateInfoByBarCodeUseCase.execute(barCode)
+    return bankslipGenerateInfoByDigitableLineUseCase.execute(digitableLine)
   }
 }

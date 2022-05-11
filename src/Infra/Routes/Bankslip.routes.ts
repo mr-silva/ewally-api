@@ -5,7 +5,7 @@ const bankslipRouter = Router()
 const bankslipController = new BankslipController()
 
 bankslipRouter
-  .route('/:barCode')
-  .get(bankslipController.generateInfoByBarCode.bind(bankslipController))
+  .route('/:digitableLine')
+  .get(bankslipController.generateInfoByDigitableLine.bind(bankslipController))
 
 export { bankslipRouter }
