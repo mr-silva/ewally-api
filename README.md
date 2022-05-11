@@ -16,12 +16,26 @@ ou
 foo@bar:~$ yarn
 ```
 
+Após você deverá copiar o exemplo das variáveis de ambiente:
+
+```zsh
+foo@bar:~$ cp .env.example .env
+```
+
 Em seguida você poderá executar exemplos de utilização do sistema criado através do comando:
 
 ```zsh
 foo@bar:~$ npm run dev
 ou
 foo@bar:~$ yarn dev
+```
+
+E para executar os testes automatizados deverá ser utilizado os seguintes comandos:
+
+```zsh
+foo@bar:~$ npm run test
+ou
+foo@bar:~$ yarn test
 ```
 
 ### Rotas da aplicação
